@@ -1,0 +1,48 @@
+/*animações*/
+@keyframes up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-up {
+  animation-name: up;
+  animation-duration: 300ms;
+  animation-fill-mode: backwards;
+}
+
+/*Para adicionar animação coloco o 
+nome da classe com o nome da animação*/
+@keyframes righttoleft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-righttoleft {
+  animation-name: righttoleft;
+  animation-duration: 300ms;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-appear {
+  animation-name: appear;
+  animation-duration: 300ms;
+  animation-fill-mode: backwards;
+}

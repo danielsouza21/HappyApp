@@ -1,0 +1,121 @@
+#page-landing {
+  background: linear-gradient(329.54deg, #29b6d1 0%, #00c7c7 100%) no-repeat;
+  min-height: 100vh;
+  text-align: center;
+  display: flex;
+}
+
+#container {
+  margin: auto; /*Mantem alinhamento ao centro da pagina*/
+  /*Top + Right + Bottom + Left*/
+
+  width: min(90%, 112rem); /*até 112% do font-size no :root*/
+  /*limitando container / conteudo*/
+}
+
+.location,
+h1,
+.visit p {
+  height: 16vh;
+}
+
+.visit a {
+  width: 8rem;
+  height: 8rem;
+  background: #ffd666;
+
+  border: none;
+  border-radius: 3rem;
+
+  display: flex;
+  align-items: center; /*Alinhamento eixo Y*/
+  justify-content: center; /*Alinhamento eixo X*/
+
+  margin: auto;
+
+  transition: background 300ms;
+}
+
+/*animações*/
+.visit a:hover {
+  /*Estado hover: quando mouse está em cima*/
+  background: #d8ffff;
+}
+
+/*Cria fila de execução das animações utilizando delays*/
+#logo {
+  animation-delay: 50ms;
+}
+
+.location {
+  animation-delay: 150ms;
+}
+
+main h1 {
+  animation-delay: 250ms;
+}
+
+.visit p {
+  animation-delay: 350ms;
+}
+
+.visit a {
+  animation-delay: 450ms;
+}
+
+/* Desktop version*/
+@media (min-width: 760px) {
+  /*so aplica configs onde a condição é aceita*/
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  #container {
+    padding: 5rem 2rem; /*aumenta um pouco o limite da caixa*/
+    /*shorthand background: imagem repeat position / size */
+    background: url("../images/bg.svg") no-repeat 80% /
+      clamp(30rem, 54vw, 56rem);
+  }
+
+  .location,
+  h1,
+  .visit p {
+    height: initial;
+    text-align: initial;
+  }
+
+  .location {
+    text-align: right;
+    font-size: 2.4rem;
+    line-height: 1.5;
+  }
+
+  main h1 {
+    /*muda apenas o h1 do main*/
+    font-size: clamp(4rem, 8vw, 8.4rem); /*clamp: min, ideal, max*/
+    font-weight: bold;
+    width: min(300px, 80%); /*aplica o menor valor*/
+    line-height: 0.88;
+
+    margin: clamp(10%, 9vh, 12%) 0 4rem;
+    /*margin: topo, lateral, baixo*/
+  }
+
+  .visit {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .visit a {
+    margin: initial;
+  }
+
+  .visit p {
+    line-height: 1.5;
+    width: clamp(20rem, 20vw, 30rem);
+    font-size: 2.4rem;
+  }
+}
