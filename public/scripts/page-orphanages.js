@@ -1,12 +1,13 @@
 var map = L.map("mapid").setView([-19.8500051, -43.9827995], 14);
+var sizeicon = 40;
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
 //create icon
 const icon = L.icon({
   iconUrl: "./public/images/map-marker.svg",
-  iconSize: [58, 68],
-  iconAnchor: [29, 68],
+  iconSize: [sizeicon, sizeicon],
+  iconAnchor: [20, 35],
   popupAnchor: [170, 2],
 });
 
