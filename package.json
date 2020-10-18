@@ -1,0 +1,20 @@
+{
+  "name": "HappyWebSite-NLW3",
+  "version": "1.0.0",
+  "description": "JavaScript, HTML e CSS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danielsouza21/HappyApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danielsouza21/HappyApp/issues"
+  },
+  "homepage": "https://github.com/danielsouza21/HappyApp#readme"
+}
