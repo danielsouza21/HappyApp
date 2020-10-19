@@ -24,7 +24,7 @@ aside {
   flex-direction: column;
   justify-content: space-between;
 
-  /* [index.html *{ box-sizing: border-box;}  width + padding*/
+  /* [index *{ box-sizing: border-box;}  width + padding*/
 }
 
 aside h2 {
