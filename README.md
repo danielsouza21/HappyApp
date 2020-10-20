@@ -12,6 +12,8 @@ JavaScript, HTML e CSS
 
 > npm install hbs
 
+> npm install sqlite-async
+
 ## Run: [localhost:3030] ou [http://127.0.0.1:3030]
 
 > node src/server.js {sem utilizar nodemon}

@@ -26,7 +26,7 @@ function addPopups({ id, name, lat, lng }) {
     minHeight: 160,
   }).setContent(
     `${name} <a href="/sgl-orphanage?id=${id}" class="choose-orphanage"> <img src="/images/arrow-white.svg"></a>`
-  );
+  ); //Ao clicar no popup, direciona para href="adress"
 
   L.marker([lat, lng], { icon }).addTo(map).bindPopup(popup);
 }
