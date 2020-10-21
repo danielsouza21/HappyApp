@@ -47,7 +47,7 @@
     </aside>
 
     <main class="animate-appear with-sidebar">
-      <form action="">
+      <form action="/save-orphanages" method="POST">
         <fieldset>
           <legend>Dados</legend>
 
@@ -81,7 +81,7 @@
             <label for="images">Foto</label>
             <div class="images-upload" id=images>
               <div class="new-upload">
-                <input class="upload-image" name="images" placeholder="Cole o link da foto aqui" required>
+                <input type="url" class="upload-image" name="images" placeholder="Cole o link da foto aqui" required>
                 <span onclick=deletePhotoField(event)><img src="/images/delete-button.svg" alt="remover foto"></span>
               </div>
             </div>
@@ -117,6 +117,10 @@
           </div>
         </fieldset>
       </form>
+
+      <a href="/delete_db" type="button" class="deletedata">
+        Reset
+      </a>
     </main>
 
     <script src="/scripts/page-create-orphanage.js">

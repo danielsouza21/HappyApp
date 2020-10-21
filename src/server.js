@@ -6,6 +6,7 @@ const path = require("path");
 const pages = require("./pages.js");
 
 server
+  .use(express.urlencoded({ extended: true }))
   //Utilizando arquivos estáticos (imagens e etc)
   .use(express.static("public"))
 
@@ -16,12 +17,11 @@ server
   //Criando rotas
   // '/' ou /index
   .get("/", pages.index) //acessa pages.index(req,res)
-  //
   .get("/orphanages", pages.orphanages)
-  //
   .get("/sgl-orphanage", pages.sgl_orphanage)
-  //
-  .get("/create-orphanage", pages.create_orphanage);
+  .get("/create-orphanage", pages.create_orphanage)
+  .get("/delete_db", pages.delete_db)
+  .post("/save-orphanages", pages.saveOrphanages);
 
 //Start server [Sem utilizar LiveServer (127.0.0.1:5500)]
 server.listen(3030); //localhost:3030

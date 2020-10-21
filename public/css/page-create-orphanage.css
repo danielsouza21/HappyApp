@@ -61,3 +61,10 @@ main {
   /* :valid -> Quando preenchido (trabalha junto com 'required') */
   border: 1px solid#b4e6cd;
 }
+
+.deletedata {
+  color: #c7d7da;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}

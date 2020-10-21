@@ -1,3 +1,5 @@
+const map_data = document.querySelector(".map-container span");
+
 const options = {
   dragging: false,
   touchZoom: false,
@@ -6,7 +8,10 @@ const options = {
   zoomControl: false,
 };
 
-var map = L.map("mapid", options).setView([-19.8500051, -43.9827995], 14);
+var map = L.map("mapid", options).setView(
+  [map_data.dataset.lat, map_data.dataset.lng],
+  14
+);
 var sizeicon = 40;
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
@@ -19,7 +24,7 @@ const icon = L.icon({
   popupAnchor: [170, 2],
 });
 
-L.marker([-19.8500051, -43.9827995], { icon }).addTo(map);
+L.marker([map_data.dataset.lat, map_data.dataset.lng], { icon }).addTo(map);
 
 /*Image gallery*/
 
