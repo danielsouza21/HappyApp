@@ -14,7 +14,7 @@ Status: Developed :heavy_check_mark:
 The Happy app helps you find orphanages around the world and spread love and affection to children.
 
 <p align="center">
-    <img alt="Desktop preview" src="./public/images/GifHappyApp.gif" width="500px">
+    <img alt="Desktop preview" src="./public/images/GifHappyApp.gif" width="750px">
 </p>
 
 ## Technologies
