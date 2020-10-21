@@ -3,12 +3,11 @@
 <h4 align="center">
     Semana Next Level Week [Rocketseat] 🚀
 </h4>
-
-## Project
-
 <h4 align="center">
     <img alt="HappyApp" title="HappyAppLogo" src="./public/images/logo-icon.png" width="50px" />
 </h4>
+
+## Project
 
 Status: Developed :heavy_check_mark:
 
