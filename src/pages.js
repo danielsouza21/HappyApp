@@ -45,6 +45,10 @@ module.exports = {
     }
   },
 
+  async login(req, res) {
+    return res.render("login", {});
+  },
+
   create_orphanage(req, res) {
     return res.render("create-orphanage");
   },
