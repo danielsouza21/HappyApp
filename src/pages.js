@@ -1,9 +1,11 @@
 const { query } = require("express");
 const DatabaseSQL = require("./database/db"); //exports Database.open() [promise -> assincrono]
 const saveOrphanage = require("./database/saveOrphanage");
+const authHandler = require("./services/AuthHandler");
 
 module.exports = {
   index(request, response) {
+    request.session.token = "";
     const query = request.query;
     var city = query.city ? query.city : "Belo Horizonte";
     //Query -> Request HTTP quando dado GET - Dados especificos
@@ -12,40 +14,65 @@ module.exports = {
   },
 
   async orphanages(req, res) {
-    try {
-      const db = await DatabaseSQL; //aguarda Database.open()
-      const orphanages = await db.all(`SELECT * FROM orphanages`); //recebe um array de orfanatos
-      return res.render("orphanages", { orphanages });
-    } catch (error) {
-      console.log(error);
-      return res.send.error("Erro SQL");
+    var authorized = await authHandler.AuthenticatorResponse(req, res);
+    if (authorized == true) {
+      try {
+        const db = await DatabaseSQL; //aguarda Database.open()
+        const orphanages = await db.all(`SELECT * FROM orphanages`); //recebe um array de orfanatos
+        //console.log(req.session.token);
+        return res.render("orphanages", {
+          orphanages: orphanages,
+          user: {
+            username: req.session.username,
+            password: req.session.password,
+          },
+        });
+      } catch (error) {
+        console.log(error);
+        return res.send.error("Erro SQL");
+      }
+    } else {
+      res.redirect("/login");
     }
   },
 
   async sgl_orphanage(req, res) {
-    const ID = req.query.id; //recupera info da requisição HTTP ?id=?
-    try {
-      const db = await DatabaseSQL; //aguarda Database.open()
-      const consultadb = await db.all(
-        `SELECT * FROM orphanages WHERE id = "${ID}"` //acessa unico orfanato
-      ); //recebe um array
+    var authorized = await authHandler.AuthenticatorResponse(req, res);
+    if (authorized == true) {
+      const ID = req.query.id; //recupera info da requisição HTTP ?id=?
 
-      var orphanage = consultadb[0]; //transforma array em elemento
-      orphanage.images = orphanage.images.split(",");
-      orphanage.firstimage = orphanage.images[0];
+      try {
+        const db = await DatabaseSQL; //aguarda Database.open()
+        const consultadb = await db.all(
+          `SELECT * FROM orphanages WHERE id = "${ID}"` //acessa unico orfanato
+        ); //recebe um array
 
-      orphanage.open_on_weekends == "0"
-        ? (orphanage.open_on_weekends = false)
-        : (orphanage.open_on_weekends = true);
+        var orphanage = consultadb[0]; //transforma array em elemento
+        orphanage.images = orphanage.images.split(",");
+        orphanage.firstimage = orphanage.images[0];
 
-      return res.render("sgl-orphanage", { orphanage: orphanage });
-    } catch (error) {
-      console.log(error);
-      return res.send.error("Erro SQL");
+        orphanage.open_on_weekends == "0"
+          ? (orphanage.open_on_weekends = false)
+          : (orphanage.open_on_weekends = true);
+
+        return res.render("sgl-orphanage", {
+          orphanage: orphanage,
+          user: {
+            username: req.session.username,
+            password: req.session.password,
+          },
+        });
+      } catch (error) {
+        console.log(error);
+        return res.send.error("Erro SQL");
+      }
+    } else {
+      res.redirect("/login");
     }
   },
 
   async login(req, res) {
+    req.session.token = "";
     return res.render("login", {});
   },
 

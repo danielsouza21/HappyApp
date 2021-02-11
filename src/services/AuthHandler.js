@@ -1,10 +1,10 @@
-const api = require("./AuthApi");
+const apiAuth = require("./AuthApi");
 
 const jwt = require("jsonwebtoken");
 
 module.exports = {
   async registerUser(firstName, lastName, username, password) {
-    const response = await api.post("users/register", {
+    const response = await apiAuth.post("users/register", {
       firstName,
       lastName,
       username,
@@ -14,49 +14,52 @@ module.exports = {
 
   async loginUser(req, res) {
     var body = req.body;
-    var username = body.username;
-    var password = body.password;
+    var user = { username: body.username, password: body.password };
 
-    const response = await api
-      .post("users/authenticate", {
-        username,
-        password,
-      })
+    var response = await apiAuth
+      .post("users/authenticate", user)
+      .then((response) => sucessAutentication(req, response, res, user))
+      //sucessAutentication -> save token from response to cookies
       .then((response) => res.redirect("/orphanages"))
       .catch((error) => {
-        console.log("Error");
-        res.redirect("/");
+        console.log(`Status error ${error.response.status}`);
+        res.redirect("/login");
       });
+  },
+
+  async AuthenticatorResponse(req, res) {
+    var token = req.session.token;
+    var response = "";
+    var authorized;
+
+    var header = { headers: { Authorization: `Bearer ${token}` } };
+    // console.log(header);
+    var response = await apiAuth
+      .get("users", header)
+      .then((response) => {
+        console.log("User Authorized");
+        authorized = "Authorized";
+      })
+      .catch((error) => {
+        console.log("User Unauthorized");
+        authorized = "Unauthorized";
+      });
+
+    if (authorized == "Authorized") {
+      return true;
+    } else {
+      return false;
+    }
   },
 };
 
-saveToken = async (req, res, next) => {
-  var expiration = 600;
+function sucessAutentication(req, response, res, user) {
+  var tokenjwt = response.data.token; //get token response
+  saveUserCookie(req, res, tokenjwt, user);
+}
 
-  token = req.headers.authorization;
-
-  return res.cookie("token", token, {
-    expires: new Date(Date.now() + expiration),
-    secure: false, // set to true if your using https
-    httpOnly: true,
-  });
-};
-
-verifyToken = async (req, res, next) => {
-  //api.defaults.headers.authorization = `Bearer ${token}`;
-
-  const token = req.cookies.token || "";
-  try {
-    if (!token) {
-      return res.status(401).json("You need to Login");
-    }
-    const decrypt = await jwt.verify(token, process.env.JWT_SECRET);
-    req.user = {
-      id: decrypt.id,
-      firstname: decrypt.firstname,
-    };
-    next();
-  } catch (err) {
-    return res.status(500).json(err.toString());
-  }
+saveUserCookie = async (req, res, token, user) => {
+  req.session.token = token;
+  req.session.username = user.username;
+  req.session.password = user.password;
 };

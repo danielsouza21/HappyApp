@@ -1,14 +1,5 @@
 # HappyApp
 
-<h4 align="center">
-    Semana Next Level Week [Rocketseat] 🚀
-</h4>
-<h4 align="center">
-    <img alt="HappyApp" title="HappyAppLogo" src="./public/images/logo-icon.png" width="50px" />
-</h4>
-
-## Project
-
 Status: Developed :heavy_check_mark:
 
 The Happy app helps you find orphanages around the world and spread love and affection to children.
