@@ -24,7 +24,7 @@ module.exports = {
           orphanages: orphanages,
           user: {
             username: req.session.username,
-            password: req.session.password,
+            firstName: req.session.firstName,
           },
         });
       } catch (error) {
@@ -40,6 +40,8 @@ module.exports = {
     var authorized = await authHandler.AuthenticatorResponse(req, res);
     if (authorized == true) {
       const ID = req.query.id; //recupera info da requisição HTTP ?id=?
+      var username_user = req.session.username;
+      var firstName_user = req.session.firstName;
 
       try {
         const db = await DatabaseSQL; //aguarda Database.open()
@@ -51,6 +53,8 @@ module.exports = {
         orphanage.images = orphanage.images.split(",");
         orphanage.firstimage = orphanage.images[0];
 
+        var verifyOwner = username_user == orphanage.owner ? true : false;
+
         orphanage.open_on_weekends == "0"
           ? (orphanage.open_on_weekends = false)
           : (orphanage.open_on_weekends = true);
@@ -58,8 +62,9 @@ module.exports = {
         return res.render("sgl-orphanage", {
           orphanage: orphanage,
           user: {
-            username: req.session.username,
-            password: req.session.password,
+            fistName: firstName_user,
+            username: username_user,
+            owner: verifyOwner,
           },
         });
       } catch (error) {
@@ -76,14 +81,24 @@ module.exports = {
     return res.render("login", {});
   },
 
-  create_orphanage(req, res) {
-    return res.render("create-orphanage");
+  async register(req, res) {
+    req.session.token = "";
+    return res.render("register", {});
+  },
+
+  async create_orphanage(req, res) {
+    var authorized = await authHandler.AuthenticatorResponse(req, res);
+    if (authorized == true && req.session.username != null) {
+      return res.render("create-orphanage");
+    }
   },
 
   saveOrphanages(req, res) {
+    var user = req.session.username;
+
     let Query = req.body;
-    add_to_database(Query);
-    return res.redirect("/create-orphanage");
+    add_to_database(Query, user);
+    return res.redirect("/orphanages");
   },
 
   async delete_db(req, res) {
@@ -94,7 +109,7 @@ module.exports = {
   },
 };
 
-async function add_to_database(Query) {
+async function add_to_database(Query, user) {
   var orphanage_toSave = {
     lat: `${Query.lat}`,
     lng: `${Query.lng}`,
@@ -105,6 +120,7 @@ async function add_to_database(Query) {
     instructions: `${Query.instructions}`,
     opening_hours: `${Query.opening_hours}`,
     open_on_weekends: `${Query.open_on_weekends}`,
+    owner: `${user}`,
   };
 
   const db = await DatabaseSQL;

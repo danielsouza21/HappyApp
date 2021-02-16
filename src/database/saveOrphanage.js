@@ -10,7 +10,8 @@ async function saveOrphanage(db, new_orphanage) {
         images,
         instructions,
         opening_hours,
-        open_on_weekends
+        open_on_weekends,
+        owner
     ) VALUES (
         "${new_orphanage.lat}",
         "${new_orphanage.lng}",
@@ -20,7 +21,8 @@ async function saveOrphanage(db, new_orphanage) {
         "${new_orphanage.images}",
         "${new_orphanage.instructions}",
         "${new_orphanage.opening_hours}",
-        "${new_orphanage.open_on_weekends}"
+        "${new_orphanage.open_on_weekends}",
+        "${new_orphanage.owner}"
     );
     `);
 }

@@ -3,13 +3,29 @@ const apiAuth = require("./AuthApi");
 const jwt = require("jsonwebtoken");
 
 module.exports = {
-  async registerUser(firstName, lastName, username, password) {
-    const response = await apiAuth.post("users/register", {
-      firstName,
-      lastName,
-      username,
-      password,
-    });
+  async registerUser(req, res) {
+    var body = req.body;
+    var user = {
+      username: body.username,
+      password: body.password,
+      firstName: body.firstName,
+      lastName: "UFMG",
+    };
+
+    const response = await apiAuth
+      .post("users/register", user)
+      .then((response) => {
+        console.log("Registered");
+        res.redirect("/login");
+      })
+      .catch((error) => {
+        console.log(
+          `Status error ${error.response.status} Message ${error.message}`
+        );
+
+        console.log(`${JSON.stringify(error.response.data)}`);
+        res.redirect("/register");
+      });
   },
 
   async loginUser(req, res) {
@@ -18,7 +34,7 @@ module.exports = {
 
     var response = await apiAuth
       .post("users/authenticate", user)
-      .then((response) => sucessAutentication(req, response, res, user))
+      .then((responseapi) => sucessAutentication(req, responseapi, res))
       //sucessAutentication -> save token from response to cookies
       .then((response) => res.redirect("/orphanages"))
       .catch((error) => {
@@ -53,13 +69,19 @@ module.exports = {
   },
 };
 
-function sucessAutentication(req, response, res, user) {
-  var tokenjwt = response.data.token; //get token response
+function sucessAutentication(req, responseapi, res) {
+  var tokenjwt = responseapi.data.token; //get token response
+
+  var user = {
+    firstName: responseapi.data.firstName,
+    username: responseapi.data.username,
+  };
+
   saveUserCookie(req, res, tokenjwt, user);
 }
 
 saveUserCookie = async (req, res, token, user) => {
   req.session.token = token;
   req.session.username = user.username;
-  req.session.password = user.password;
+  req.session.firstName = user.firstName;
 };

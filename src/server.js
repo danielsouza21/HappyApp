@@ -31,8 +31,10 @@ server
   .get("/delete_db", pages.delete_db)
   .post("/save-orphanages", pages.saveOrphanages)
 
+  .get("/register", pages.register)
+  .post("/register", auth.registerUser)
+
   .get("/login", pages.login)
   .post("/login", auth.loginUser);
 
-//Start server [Sem utilizar LiveServer (127.0.0.1:5500)]
 server.listen(3030); //localhost:3030
