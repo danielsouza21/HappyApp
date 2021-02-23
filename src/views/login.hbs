@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Login HappyApp</title>
+    <title>Login V2</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--===============================================================================================-->
@@ -34,17 +34,23 @@
     <div class="limiter">
         <div class="container-login100">
             <div class="wrap-login100">
-                <form action="/login" method="POST" class="login100-form validate-form">
+                    <header>
+                        <center><img class="animate-up" #id="logo" src="/images/logo-icon.png" alt="Logomarca de Happy" /></center>
+                        <div class="location animate-up">
+                        </div>
+                    </header>
+                    <form action="/login" method="POST" class="login100-form validate-form">
+
                     <span class="login100-form-title p-b-26">
-                        Welcome
+                        Seja Bem Vindo(a)
                     </span>
-                    <span class="login100-form-title p-b-48">
-                        <i class="zmdi zmdi-font"></i>
+                        <span class="login100-form-title p-b-26">
+                        ... em um mundo mais feliz!
                     </span>
 
                     <div class="wrap-input100 validate-input" data-validate="Valid email is: a@b.c">
                         <input class="input100" type="text" name="username">
-                        <span class="focus-input100" data-placeholder="Username / Email"></span>
+                        <span class="focus-input100" data-placeholder="username"></span>
                     </div>
 
                     <div class="wrap-input100 validate-input" data-validate="Enter password">
@@ -52,7 +58,7 @@
                             <i class="zmdi zmdi-eye"></i>
                         </span>
                         <input class="input100" type="password" name="password">
-                        <span class="focus-input100" data-placeholder="Senha"></span>
+                        <span class="focus-input100" data-placeholder="password"></span>
                     </div>
 
                     <div class="container-login100-form-btn">
@@ -66,11 +72,11 @@
 
                     <div class="text-center p-t-115">
                         <span class="txt1">
-                            Ainda não tem uma conta?
+                            Don’t have an account?
                         </span>
 
-                        <a class="txt2" href="/register">
-                            Registrar-se
+                        <a class="txt2" href="#">
+                            Sign Up
                         </a>
                     </div>
                 </form>
