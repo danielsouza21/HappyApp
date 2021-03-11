@@ -1,4 +1,5 @@
 const { query } = require("express");
+const { reset } = require("nodemon");
 const DatabaseSQL = require("./database/db"); //exports Database.open() [promise -> assincrono]
 const saveOrphanage = require("./database/saveOrphanage");
 const authHandler = require("./services/AuthHandler");

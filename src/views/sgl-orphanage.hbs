@@ -18,6 +18,8 @@
   <link rel="stylesheet" href="/css/buttons.css" />
   <link rel="stylesheet" href="/css/animations.css" />
 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin="" />
@@ -37,12 +39,6 @@
       <a href="/">
         <img src="/images/map-marker.svg" alt="Happy">
       </a>
-
-      <div>
-        <a>{{user.fistName}}
-          - Owner? {{user.owner}}</a>
-      </div>
-
 
       <footer>
         <button onclick="history.back()">
@@ -110,6 +106,30 @@
 
             {{/if}}
           </div>
+
+          <hr>
+
+          <form>
+            <fieldset>
+              <div class="input-block images-sgl">
+                <label for="images-sgl">Cartas</label>
+                <div class="images-upload" id=cards>
+                  <div class="new-upload">
+                    <input type="text" class="upload-image cards-input" name="images-sgl"
+                      placeholder="Insira o texto da carta aqui" required>
+                    <span onclick=deleteCardField(event)><img src="/images/delete-button.svg" alt="remover foto"></span>
+                  </div>
+                </div>
+                <button onclick=addCardField() type="button">
+                  <img src="/images/add-file.svg">
+                </button>
+
+                <button type="submit" name="submit" class="submit" onclick=saveCards(event)>
+                  Save
+                </button>
+              </div>
+            </fieldset>
+          </form>
 
         </div>
 
