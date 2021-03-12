@@ -2,13 +2,17 @@ const { query } = require("express");
 const { reset } = require("nodemon");
 const DatabaseSQL = require("./database/db"); //exports Database.open() [promise -> assincrono]
 const DatabaseCardsSQL = require("./database/dbCards");
+
+const SaveCardsDb = require("./database/SaveCards");
 const saveOrphanage = require("./database/saveOrphanage");
-const saveCardsDb = require("./database/saveCards");
+const UpdateCardsDb = require("./database/UpdateCards");
+
 const authHandler = require("./services/AuthHandler");
 
 module.exports = {
   index(request, response) {
     request.session.token = "";
+    request.session.username = "";
     const query = request.query;
     var city = query.city ? query.city : "Belo Horizonte";
     //Query -> Request HTTP quando dado GET - Dados especificos
@@ -90,11 +94,13 @@ module.exports = {
 
   async login(req, res) {
     req.session.token = "";
+    req.session.username = "";
     return res.render("login", {});
   },
 
   async register(req, res) {
     req.session.token = "";
+    req.session.username = "";
     return res.render("register", {});
   },
 
@@ -161,5 +167,14 @@ async function add_to_cardsDb(cards, page_id) {
   };
 
   const dbCards = await DatabaseCardsSQL;
-  await saveCardsDb(dbCards, cards_toSave);
+  const consultCards = await dbCards.all(
+    `SELECT * FROM cards WHERE id_page = "${page_id}" `
+  );
+
+  var cardsData = consultCards[0];
+  if (cardsData) {
+    await UpdateCardsDb(dbCards, cards_toSave);
+  } else {
+    await SaveCardsDb(dbCards, cards_toSave);
+  }
 }
