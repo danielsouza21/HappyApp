@@ -1,7 +1,9 @@
 const { query } = require("express");
 const { reset } = require("nodemon");
 const DatabaseSQL = require("./database/db"); //exports Database.open() [promise -> assincrono]
+const DatabaseCardsSQL = require("./database/dbCards");
 const saveOrphanage = require("./database/saveOrphanage");
+const saveCardsDb = require("./database/saveCards");
 const authHandler = require("./services/AuthHandler");
 
 module.exports = {
@@ -50,6 +52,14 @@ module.exports = {
           `SELECT * FROM orphanages WHERE id = "${ID}"` //acessa unico orfanato
         ); //recebe um array
 
+        const dbCards = await DatabaseCardsSQL;
+        const consultCards = await dbCards.all(
+          `SELECT * FROM cards WHERE id_page = "${ID}" `
+        );
+
+        var cardsData = consultCards[0];
+        var cardsRecovery = cardsData.cards.split(",");
+
         var orphanage = consultadb[0]; //transforma array em elemento
         orphanage.images = orphanage.images.split(",");
         orphanage.firstimage = orphanage.images[0];
@@ -61,6 +71,7 @@ module.exports = {
           : (orphanage.open_on_weekends = true);
 
         return res.render("sgl-orphanage", {
+          cardsRecovery: cardsRecovery,
           orphanage: orphanage,
           user: {
             fistName: firstName_user,
@@ -102,6 +113,17 @@ module.exports = {
     return res.redirect("/orphanages");
   },
 
+  saveCards(req, res) {
+    let Query = req.body;
+    let Cards = Query.cardssgl.toString().split(",");
+    let id = req.body.idPage;
+    id = id.toString().replace(/\D/g, "");
+
+    add_to_cardsDb(Cards, id);
+
+    res.redirect("/orphanages");
+  },
+
   async delete_db(req, res) {
     const db = await DatabaseSQL;
     await db.run(`DELETE FROM orphanages`); //delete all database
@@ -129,4 +151,14 @@ async function add_to_database(Query, user) {
 
   //var database_cons = await db.all(`SELECT * FROM orphanages`);
   //console.log(database_cons);
+}
+
+async function add_to_cardsDb(cards, page_id) {
+  var cards_toSave = {
+    cards: `${cards.toString()}`,
+    id_page: `${parseInt(page_id)}`,
+  };
+
+  const dbCards = await DatabaseCardsSQL;
+  await saveCardsDb(dbCards, cards_toSave);
 }

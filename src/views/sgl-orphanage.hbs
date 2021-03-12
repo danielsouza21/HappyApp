@@ -109,22 +109,32 @@
 
           <hr>
 
-          <form>
+          <form action="/save-cards" method="POST">
+            <input hidden type="text" id="idPage" name="idPage">
             <fieldset>
               <div class="input-block images-sgl">
                 <label for="images-sgl">Cartas</label>
                 <div class="images-upload" id=cards>
+                  {{#each cardsRecovery}}
                   <div class="new-upload">
-                    <input type="text" class="upload-image cards-input" name="images-sgl"
+                    <input type="text" class="upload-image cards-input" name="cardssgl"
+                      placeholder="Insira o texto da carta aqui" value="{{this}}">
+                    <span onclick=deleteCardField(event)><img src=" /images/delete-button.svg"
+                        alt="remover foto"></span>
+                  </div>
+                  {{/each}}
+                  <div class="new-upload">
+                    <input type="text" class="upload-image cards-input" name="cardssgl"
                       placeholder="Insira o texto da carta aqui" required>
-                    <span onclick=deleteCardField(event)><img src="/images/delete-button.svg" alt="remover foto"></span>
+                    <span onclick=deleteCardField(event)><img src=" /images/delete-button.svg"
+                        alt="remover foto"></span>
                   </div>
                 </div>
                 <button onclick=addCardField() type="button">
                   <img src="/images/add-file.svg">
                 </button>
 
-                <button type="submit" name="submit" class="submit" onclick=saveCards(event)>
+                <button type="submit" name="submit" class="submit">
                   Save
                 </button>
               </div>
@@ -141,8 +151,8 @@
 
     </main>
 
-    <script src="/scripts/sgl_orphanage.js">
-    </script>
+    <script src="/scripts/sgl_orphanage.js"></script>
+    <script>document.getElementById("idPage").value = window.location.search.replace("?", "");</script>
 </body>
 
 </html>

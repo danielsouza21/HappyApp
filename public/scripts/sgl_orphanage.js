@@ -92,8 +92,3 @@ function deleteCardField(event) {
     DeleteFieldContainer.remove();
   }
 }
-
-function saveCards(event) {
-  var cards = document.getElementsByClassName("cards-input");
-  console.log(cards[0].value);
-}
