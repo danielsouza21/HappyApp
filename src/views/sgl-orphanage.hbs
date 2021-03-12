@@ -110,7 +110,8 @@
           <hr>
 
           <form action="/save-cards" method="POST">
-            <input hidden type="text" id="idPage" name="idPage">
+            <input hidden id="testowner" name="testowner" value="{{user.owner}}"></input>
+            <input hidden type=" text" id="idPage" name="idPage">
             <fieldset>
               <div class="input-block images-sgl">
                 <label for="images-sgl">Cartas</label>

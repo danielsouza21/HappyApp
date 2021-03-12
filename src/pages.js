@@ -58,7 +58,7 @@ module.exports = {
         );
 
         var cardsData = consultCards[0];
-        var cardsRecovery = cardsData.cards.split(",");
+        if (cardsData) var cardsRecovery = cardsData.cards.split(",");
 
         var orphanage = consultadb[0]; //transforma array em elemento
         orphanage.images = orphanage.images.split(",");
@@ -114,13 +114,14 @@ module.exports = {
   },
 
   saveCards(req, res) {
-    let Query = req.body;
-    let Cards = Query.cardssgl.toString().split(",");
-    let id = req.body.idPage;
-    id = id.toString().replace(/\D/g, "");
+    if (req.body.testowner == "true") {
+      let Query = req.body;
+      let Cards = Query.cardssgl.toString().split(",");
+      let id = req.body.idPage;
+      id = id.toString().replace(/\D/g, "");
 
-    add_to_cardsDb(Cards, id);
-
+      add_to_cardsDb(Cards, id);
+    }
     res.redirect("/orphanages");
   },
 
