@@ -47,3 +47,57 @@ function selectImage(event) {
   //adicionar classe .active para botao clicado
   button.classList.add("active");
 }
+
+///
+
+/* Field upload photo */
+function addCardField() {
+  var owner = document.getElementById("testowner").value;
+
+  if (owner == "true") {
+    var ContainerPhoto, FieldsContainer, NewFieldContainer;
+    var Input_FieldContainer;
+
+    //container de fotos: #images
+    ContainerPhoto = document.querySelector("#cards");
+
+    //container a ser duplicado: .new-image
+    FieldsContainer = document.querySelectorAll(".new-upload");
+
+    //clonar ultima imagem adicionada
+    NewFieldContainer = FieldsContainer[FieldsContainer.length - 1].cloneNode(
+      1
+    );
+
+    Input_FieldContainer = NewFieldContainer.children[0];
+
+    if (!(Input_FieldContainer.value == "")) {
+      //injetar no HTML novo input ".new-upload"
+      Input_FieldContainer.value = "";
+      ContainerPhoto.appendChild(NewFieldContainer);
+    } else {
+      return;
+    }
+  }
+}
+
+function deleteCardField(event) {
+  var ContainerPhoto, FieldsContainer, elementHTML;
+  var DeleteFieldContainer;
+  var owner = document.getElementById("testowner").value;
+
+  if (owner == "true") {
+    this_elementHTML = event.currentTarget;
+
+    FieldsContainer = document.querySelectorAll(".new-upload");
+
+    if (FieldsContainer.length < 2) {
+      //limpar campo
+      this_elementHTML.parentNode.children[0].value = "";
+    } else {
+      //deleta campo
+      DeleteFieldContainer = this_elementHTML.parentNode;
+      DeleteFieldContainer.remove();
+    }
+  }
+}

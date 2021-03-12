@@ -30,6 +30,7 @@ server
   .get("/create-orphanage", pages.create_orphanage)
   .get("/delete_db", pages.delete_db)
   .post("/save-orphanages", pages.saveOrphanages)
+  .post("/save-cards", pages.saveCards)
 
   .get("/register", pages.register)
   .post("/register", auth.registerUser)

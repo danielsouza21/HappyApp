@@ -1,11 +1,18 @@
 const { query } = require("express");
+const { reset } = require("nodemon");
 const DatabaseSQL = require("./database/db"); //exports Database.open() [promise -> assincrono]
+const DatabaseCardsSQL = require("./database/dbCards");
+
+const SaveCardsDb = require("./database/SaveCards");
 const saveOrphanage = require("./database/saveOrphanage");
+const UpdateCardsDb = require("./database/UpdateCards");
+
 const authHandler = require("./services/AuthHandler");
 
 module.exports = {
   index(request, response) {
     request.session.token = "";
+    request.session.username = "";
     const query = request.query;
     var city = query.city ? query.city : "Belo Horizonte";
     //Query -> Request HTTP quando dado GET - Dados especificos
@@ -49,6 +56,14 @@ module.exports = {
           `SELECT * FROM orphanages WHERE id = "${ID}"` //acessa unico orfanato
         ); //recebe um array
 
+        const dbCards = await DatabaseCardsSQL;
+        const consultCards = await dbCards.all(
+          `SELECT * FROM cards WHERE id_page = "${ID}" `
+        );
+
+        var cardsData = consultCards[0];
+        if (cardsData) var cardsRecovery = cardsData.cards.split(",");
+
         var orphanage = consultadb[0]; //transforma array em elemento
         orphanage.images = orphanage.images.split(",");
         orphanage.firstimage = orphanage.images[0];
@@ -60,6 +75,7 @@ module.exports = {
           : (orphanage.open_on_weekends = true);
 
         return res.render("sgl-orphanage", {
+          cardsRecovery: cardsRecovery,
           orphanage: orphanage,
           user: {
             fistName: firstName_user,
@@ -78,11 +94,13 @@ module.exports = {
 
   async login(req, res) {
     req.session.token = "";
+    req.session.username = "";
     return res.render("login", {});
   },
 
   async register(req, res) {
     req.session.token = "";
+    req.session.username = "";
     return res.render("register", {});
   },
 
@@ -99,6 +117,18 @@ module.exports = {
     let Query = req.body;
     add_to_database(Query, user);
     return res.redirect("/orphanages");
+  },
+
+  saveCards(req, res) {
+    if (req.body.testowner == "true") {
+      let Query = req.body;
+      let Cards = Query.cardssgl.toString().split(",");
+      let id = req.body.idPage;
+      id = id.toString().replace(/\D/g, "");
+
+      add_to_cardsDb(Cards, id);
+    }
+    res.redirect("/orphanages");
   },
 
   async delete_db(req, res) {
@@ -128,4 +158,23 @@ async function add_to_database(Query, user) {
 
   //var database_cons = await db.all(`SELECT * FROM orphanages`);
   //console.log(database_cons);
+}
+
+async function add_to_cardsDb(cards, page_id) {
+  var cards_toSave = {
+    cards: `${cards.toString()}`,
+    id_page: `${parseInt(page_id)}`,
+  };
+
+  const dbCards = await DatabaseCardsSQL;
+  const consultCards = await dbCards.all(
+    `SELECT * FROM cards WHERE id_page = "${page_id}" `
+  );
+
+  var cardsData = consultCards[0];
+  if (cardsData) {
+    await UpdateCardsDb(dbCards, cards_toSave);
+  } else {
+    await SaveCardsDb(dbCards, cards_toSave);
+  }
 }
