@@ -1,9 +1,18 @@
 const { query } = require("express");
+const { reset } = require("nodemon");
 const DatabaseSQL = require("./database/db"); //exports Database.open() [promise -> assincrono]
+const DatabaseCardsSQL = require("./database/dbCards");
+
+const SaveCardsDb = require("./database/SaveCards");
 const saveOrphanage = require("./database/saveOrphanage");
+const UpdateCardsDb = require("./database/UpdateCards");
+
+const authHandler = require("./services/AuthHandler");
 
 module.exports = {
   index(request, response) {
+    request.session.token = "";
+    request.session.username = "";
     const query = request.query;
     var city = query.city ? query.city : "Belo Horizonte";
     //Query -> Request HTTP quando dado GET - Dados especificos
@@ -12,47 +21,114 @@ module.exports = {
   },
 
   async orphanages(req, res) {
-    try {
-      const db = await DatabaseSQL; //aguarda Database.open()
-      const orphanages = await db.all(`SELECT * FROM orphanages`); //recebe um array de orfanatos
-      return res.render("orphanages", { orphanages });
-    } catch (error) {
-      console.log(error);
-      return res.send.error("Erro SQL");
+    var authorized = await authHandler.AuthenticatorResponse(req, res);
+    if (authorized == true) {
+      try {
+        const db = await DatabaseSQL; //aguarda Database.open()
+        const orphanages = await db.all(`SELECT * FROM orphanages`); //recebe um array de orfanatos
+        //console.log(req.session.token);
+        return res.render("orphanages", {
+          orphanages: orphanages,
+          user: {
+            username: req.session.username,
+            firstName: req.session.firstName,
+          },
+        });
+      } catch (error) {
+        console.log(error);
+        return res.send.error("Erro SQL");
+      }
+    } else {
+      res.redirect("/login");
     }
   },
 
   async sgl_orphanage(req, res) {
-    const ID = req.query.id; //recupera info da requisição HTTP ?id=?
-    try {
-      const db = await DatabaseSQL; //aguarda Database.open()
-      const consultadb = await db.all(
-        `SELECT * FROM orphanages WHERE id = "${ID}"` //acessa unico orfanato
-      ); //recebe um array
+    var authorized = await authHandler.AuthenticatorResponse(req, res);
+    if (authorized == true) {
+      const ID = req.query.id; //recupera info da requisição HTTP ?id=?
+      var username_user = req.session.username;
+      var firstName_user = req.session.firstName;
 
-      var orphanage = consultadb[0]; //transforma array em elemento
-      orphanage.images = orphanage.images.split(",");
-      orphanage.firstimage = orphanage.images[0];
+      try {
+        const db = await DatabaseSQL; //aguarda Database.open()
+        const consultadb = await db.all(
+          `SELECT * FROM orphanages WHERE id = "${ID}"` //acessa unico orfanato
+        ); //recebe um array
 
-      orphanage.open_on_weekends == "0"
-        ? (orphanage.open_on_weekends = false)
-        : (orphanage.open_on_weekends = true);
+        const dbCards = await DatabaseCardsSQL;
+        const consultCards = await dbCards.all(
+          `SELECT * FROM cards WHERE id_page = "${ID}" `
+        );
 
-      return res.render("sgl-orphanage", { orphanage: orphanage });
-    } catch (error) {
-      console.log(error);
-      return res.send.error("Erro SQL");
+        var cardsData = consultCards[0];
+        if (cardsData) var cardsRecovery = cardsData.cards.split(",");
+
+        var orphanage = consultadb[0]; //transforma array em elemento
+        orphanage.images = orphanage.images.split(",");
+        orphanage.firstimage = orphanage.images[0];
+
+        var verifyOwner = username_user == orphanage.owner ? true : false;
+
+        orphanage.open_on_weekends == "0"
+          ? (orphanage.open_on_weekends = false)
+          : (orphanage.open_on_weekends = true);
+
+        return res.render("sgl-orphanage", {
+          cardsRecovery: cardsRecovery,
+          orphanage: orphanage,
+          user: {
+            fistName: firstName_user,
+            username: username_user,
+            owner: verifyOwner,
+          },
+        });
+      } catch (error) {
+        console.log(error);
+        return res.send.error("Erro SQL");
+      }
+    } else {
+      res.redirect("/login");
     }
   },
 
-  create_orphanage(req, res) {
-    return res.render("create-orphanage");
+  async login(req, res) {
+    req.session.token = "";
+    req.session.username = "";
+    return res.render("login", {});
+  },
+
+  async register(req, res) {
+    req.session.token = "";
+    req.session.username = "";
+    return res.render("register", {});
+  },
+
+  async create_orphanage(req, res) {
+    var authorized = await authHandler.AuthenticatorResponse(req, res);
+    if (authorized == true && req.session.username != null) {
+      return res.render("create-orphanage");
+    }
   },
 
   saveOrphanages(req, res) {
+    var user = req.session.username;
+
     let Query = req.body;
-    add_to_database(Query);
-    return res.redirect("/create-orphanage");
+    add_to_database(Query, user);
+    return res.redirect("/orphanages");
+  },
+
+  saveCards(req, res) {
+    if (req.body.testowner == "true") {
+      let Query = req.body;
+      let Cards = Query.cardssgl.toString().split(",");
+      let id = req.body.idPage;
+      id = id.toString().replace(/\D/g, "");
+
+      add_to_cardsDb(Cards, id);
+    }
+    res.redirect("/orphanages");
   },
 
   async delete_db(req, res) {
@@ -63,7 +139,7 @@ module.exports = {
   },
 };
 
-async function add_to_database(Query) {
+async function add_to_database(Query, user) {
   var orphanage_toSave = {
     lat: `${Query.lat}`,
     lng: `${Query.lng}`,
@@ -74,6 +150,7 @@ async function add_to_database(Query) {
     instructions: `${Query.instructions}`,
     opening_hours: `${Query.opening_hours}`,
     open_on_weekends: `${Query.open_on_weekends}`,
+    owner: `${user}`,
   };
 
   const db = await DatabaseSQL;
@@ -81,4 +158,23 @@ async function add_to_database(Query) {
 
   //var database_cons = await db.all(`SELECT * FROM orphanages`);
   //console.log(database_cons);
+}
+
+async function add_to_cardsDb(cards, page_id) {
+  var cards_toSave = {
+    cards: `${cards.toString()}`,
+    id_page: `${parseInt(page_id)}`,
+  };
+
+  const dbCards = await DatabaseCardsSQL;
+  const consultCards = await dbCards.all(
+    `SELECT * FROM cards WHERE id_page = "${page_id}" `
+  );
+
+  var cardsData = consultCards[0];
+  if (cardsData) {
+    await UpdateCardsDb(dbCards, cards_toSave);
+  } else {
+    await SaveCardsDb(dbCards, cards_toSave);
+  }
 }

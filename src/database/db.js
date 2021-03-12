@@ -1,5 +1,5 @@
 const Database = require("sqlite-async");
-console.log("SQL Database acess...");
+console.log("SQL Database access...");
 
 function execute(db) {
   return db.exec(`
@@ -13,7 +13,8 @@ function execute(db) {
         images TEXT,
         instructions TEXT,
         opening_hours TEXT,
-        open_on_weekends TEXT
+        open_on_weekends TEXT,
+        owner TEXT
     );
   `);
 }
